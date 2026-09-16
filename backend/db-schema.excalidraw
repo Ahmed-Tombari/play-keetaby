@@ -1,0 +1,52 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "hermes-agent",
+  "elements": [
+    { "type": "text", "id": "t_title", "x": 560, "y": 14, "text": "Games Platform - Database Schema (v1)", "fontSize": 26, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "Games Platform - Database Schema (v1)", "autoResize": true },
+    { "type": "text", "id": "t_sub", "x": 620, "y": 52, "text": "Learning games platform - Admin controls the platform & users", "fontSize": 16, "fontFamily": 1, "strokeColor": "#6b7280", "originalText": "Learning games platform - Admin controls the platform & users", "autoResize": true },
+
+    { "type": "rectangle", "id": "rc_cat", "x": 320, "y": 70, "width": 250, "height": 230, "backgroundColor": "#a5d8ff", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1, "roundness": { "type": 3 } },
+    { "type": "text", "id": "tn_cat", "x": 334, "y": 76, "text": "categories", "fontSize": 20, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "categories", "autoResize": true },
+    { "type": "text", "id": "tc_cat", "x": 336, "y": 110, "text": "id UUID PK\nname TEXT\nslug TEXT UNIQUE\nicon TEXT\ncreated_at TIMESTAMPTZ", "fontSize": 16, "fontFamily": 1, "strokeColor": "#37474f", "originalText": "id UUID PK\nname TEXT\nslug TEXT UNIQUE\nicon TEXT\ncreated_at TIMESTAMPTZ", "autoResize": true },
+
+    { "type": "rectangle", "id": "rc_game", "x": 680, "y": 70, "width": 250, "height": 230, "backgroundColor": "#a5d8ff", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1, "roundness": { "type": 3 } },
+    { "type": "text", "id": "tn_game", "x": 694, "y": 76, "text": "games", "fontSize": 20, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "games", "autoResize": true },
+    { "type": "text", "id": "tc_game", "x": 696, "y": 110, "text": "id UUID PK\ncategory_id UUID FK (categories)\nslug TEXT UNIQUE\ntitle TEXT\ndescription TEXT\ndifficulty TEXT (easy / medium / hard)\nis_published BOOLEAN\ncreated_at TIMESTAMPTZ", "fontSize": 16, "fontFamily": 1, "strokeColor": "#37474f", "originalText": "id UUID PK\ncategory_id UUID FK (categories)\nslug TEXT UNIQUE\ntitle TEXT\ndescription TEXT\ndifficulty TEXT (easy / medium / hard)\nis_published BOOLEAN\ncreated_at TIMESTAMPTZ", "autoResize": true },
+
+    { "type": "rectangle", "id": "rc_level", "x": 1040, "y": 70, "width": 250, "height": 230, "backgroundColor": "#ffd8a8", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1, "roundness": { "type": 3 } },
+    { "type": "text", "id": "tn_level", "x": 1054, "y": 76, "text": "game_levels", "fontSize": 20, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "game_levels", "autoResize": true },
+    { "type": "text", "id": "tc_level", "x": 1056, "y": 110, "text": "id UUID PK\ngame_id UUID FK (games)\ntitle TEXT\nlevel_order INTEGER\nis_published BOOLEAN", "fontSize": 16, "fontFamily": 1, "strokeColor": "#37474f", "originalText": "id UUID PK\ngame_id UUID FK (games)\ntitle TEXT\nlevel_order INTEGER\nis_published BOOLEAN", "autoResize": true },
+
+    { "type": "rectangle", "id": "rc_user", "x": 320, "y": 440, "width": 250, "height": 240, "backgroundColor": "#c3fae8", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1, "roundness": { "type": 3 } },
+    { "type": "text", "id": "tn_user", "x": 334, "y": 446, "text": "users", "fontSize": 20, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "users", "autoResize": true },
+    { "type": "text", "id": "tc_user", "x": 336, "y": 480, "text": "id UUID PK\nfull_name TEXT\nemail TEXT UNIQUE\npassword_hash TEXT\nrole TEXT (ADMIN / USER)\nis_active BOOLEAN (admin lock)\ncreated_at TIMESTAMPTZ", "fontSize": 16, "fontFamily": 1, "strokeColor": "#37474f", "originalText": "id UUID PK\nfull_name TEXT\nemail TEXT UNIQUE\npassword_hash TEXT\nrole TEXT (ADMIN / USER)\nis_active BOOLEAN (admin lock)\ncreated_at TIMESTAMPTZ", "autoResize": true },
+
+    { "type": "rectangle", "id": "rc_plays", "x": 655, "y": 440, "width": 300, "height": 240, "backgroundColor": "#c3fae8", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1, "roundness": { "type": 3 } },
+    { "type": "text", "id": "tn_plays", "x": 669, "y": 446, "text": "plays", "fontSize": 20, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "plays", "autoResize": true },
+    { "type": "text", "id": "tc_plays", "x": 671, "y": 480, "text": "id UUID PK\nuser_id UUID FK (users)\ngame_id UUID FK (games)\nscore INTEGER\nstars INT (0-3)\nplayed_at TIMESTAMPTZ", "fontSize": 16, "fontFamily": 1, "strokeColor": "#37474f", "originalText": "id UUID PK\nuser_id UUID FK (users)\ngame_id UUID FK (games)\nscore INTEGER\nstars INT (0-3)\nplayed_at TIMESTAMPTZ", "autoResize": true },
+
+    { "type": "arrow", "id": "a_cat_game", "x": 570, "y": 185, "width": 110, "height": 0, "points": [[0,0],[110,0]], "endArrowhead": "arrow" },
+    { "type": "text", "id": "al_cat_game", "x": 606, "y": 158, "text": "1 : N", "fontSize": 16, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "1 : N", "autoResize": true },
+    { "type": "arrow", "id": "a_game_level", "x": 930, "y": 185, "width": 110, "height": 0, "points": [[0,0],[110,0]], "endArrowhead": "arrow" },
+    { "type": "text", "id": "al_game_level", "x": 966, "y": 158, "text": "1 : N", "fontSize": 16, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "1 : N", "autoResize": true },
+    { "type": "arrow", "id": "a_user_plays", "x": 570, "y": 560, "width": 85, "height": 0, "points": [[0,0],[85,0]], "endArrowhead": "arrow" },
+    { "type": "text", "id": "al_user_plays", "x": 590, "y": 533, "text": "1 : N", "fontSize": 16, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "1 : N", "autoResize": true },
+    { "type": "arrow", "id": "a_game_plays", "x": 805, "y": 300, "width": 0, "height": 140, "points": [[0,0],[0,140]], "endArrowhead": "arrow" },
+    { "type": "text", "id": "al_game_plays", "x": 822, "y": 350, "text": "1 : N", "fontSize": 16, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "1 : N", "autoResize": true },
+
+    { "type": "text", "id": "t_legend", "x": 60, "y": 478, "text": "Legend", "fontSize": 18, "fontFamily": 1, "strokeColor": "#1e1e1e", "originalText": "Legend", "autoResize": true },
+    { "type": "rectangle", "id": "lg_sq1", "x": 62, "y": 512, "width": 16, "height": 16, "backgroundColor": "#c3fae8", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1 },
+    { "type": "text", "id": "lg_lbl1", "x": 88, "y": 507, "text": "people & progress (users, plays)", "fontSize": 14, "fontFamily": 1, "strokeColor": "#54616b", "originalText": "people & progress (users, plays)", "autoResize": true },
+    { "type": "rectangle", "id": "lg_sq2", "x": 62, "y": 545, "width": 16, "height": 16, "backgroundColor": "#a5d8ff", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1 },
+    { "type": "text", "id": "lg_lbl2", "x": 88, "y": 540, "text": "platform content (categories, games)", "fontSize": 14, "fontFamily": 1, "strokeColor": "#54616b", "originalText": "platform content (categories, games)", "autoResize": true },
+    { "type": "rectangle", "id": "lg_sq3", "x": 62, "y": 578, "width": 16, "height": 16, "backgroundColor": "#ffd8a8", "fillStyle": "solid", "strokeColor": "#1e1e1e", "strokeWidth": 2, "roughness": 1 },
+    { "type": "text", "id": "lg_lbl3", "x": 88, "y": 573, "text": "game detail (game_levels)", "fontSize": 14, "fontFamily": 1, "strokeColor": "#54616b", "originalText": "game detail (game_levels)", "autoResize": true },
+
+    { "type": "text", "id": "t_note_user", "x": 320, "y": 700, "text": "role = ADMIN (controls platform + users) or USER (player)", "fontSize": 14, "fontFamily": 1, "strokeColor": "#54616b", "originalText": "role = ADMIN (controls platform + users) or USER (player)", "autoResize": true },
+    { "type": "text", "id": "t_note_plays", "x": 655, "y": 700, "text": "plays = progress log, one row per user attempt on a game", "fontSize": 14, "fontFamily": 1, "strokeColor": "#54616b", "originalText": "plays = progress log, one row per user attempt on a game", "autoResize": true }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  }
+}

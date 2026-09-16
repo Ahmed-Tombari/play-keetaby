@@ -1,0 +1,79 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Difficulty {
+  easy
+  med
+  hard
+}
+
+model Category {
+  id        String   @id @default(uuid()) @db.Uuid
+  name      String
+  slug      String   @unique
+  icon      String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  games Game[]
+
+  @@map("categories")
+}
+
+model Game {
+  id          String      @id @default(uuid()) @db.Uuid
+  categoryId  String      @map("category_id") @db.Uuid
+  title       String
+  slug        String      @unique
+  description String?
+  difficulty  Difficulty?
+  isPublished Boolean     @default(false) @map("is_published")
+  createdAt   DateTime    @default(now()) @map("created_at") @db.Timestamptz
+
+  category Category    @relation(fields: [categoryId], references: [id])
+  levels   GameLevel[]
+
+  @@map("games")
+}
+
+model GameLevel {
+  id          String  @id @default(uuid()) @db.Uuid
+  gameId      String  @map("game_id") @db.Uuid
+  title       String
+  levelOrder  Int     @map("level_order")
+  isPublished Boolean @default(false) @map("is_published")
+
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@map("game_levels")
+}
+
+// Auth tables (used by the raw-SQL auth code in src/controllers & src/services).
+// Modeled here so Prisma Migrate keeps the whole DB in sync.
+model User {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  fullName     String   @map("full_name")
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  role         String   @default("USER") // USER | ADMIN
+  isVerified   Boolean  @default(false) @map("is_verified")
+  isActive     Boolean  @default(true) @map("is_active")
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("users")
+}
+
+model PasswordReset {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email     String
+  resetCode String   @map("reset_code")
+  expiresAt DateTime @map("expires_at") @db.Timestamptz
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  @@map("password_resets")
+}

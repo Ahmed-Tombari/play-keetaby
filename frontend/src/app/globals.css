@@ -1,0 +1,441 @@
+/* Home screen styles. Every number here was measured against the design file
+   (1382x920) and is written next to the block it belongs to. */
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #fff7e8;
+  --color-muted: #a9b2e0;
+  --color-ink: #1b1b3f;
+  --font-display: var(--font-baloo), system-ui, sans-serif;
+  --font-body: var(--font-tajawal), system-ui, sans-serif;
+}
+
+html, body {
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  color: #fff;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  background: #0b0e26;
+}
+
+.screen {
+  isolation: isolate;
+  min-height: 100dvh;
+  position: relative;
+  overflow: hidden;
+}
+
+.screen-bg {
+  z-index: -2;
+  object-fit: cover;
+  object-position: center 46%;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  width: 100%;
+  height: 100%;
+  display: block;
+  position: absolute;
+  inset: 0;
+}
+
+.screen-shade {
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(#09143357 0%, #09143314 11%, #09143300 24%), linear-gradient(0deg, #09143380 0%, #0914331f 14%, #09143300 30%);
+  position: absolute;
+  inset: 0;
+}
+
+.topbar {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 3vw;
+  padding: 2vh 5vw 0 1.4vw;
+}
+
+.nav-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 2vh;
+}
+
+.hs {
+  cursor: pointer;
+  transform-origin: center;
+  background: none;
+  border: 0;
+  margin: 0;
+  padding: 0;
+  transition: transform .18s cubic-bezier(.34, 1.56, .64, 1), filter .18s;
+  display: block;
+}
+
+.hs:hover {
+  filter: drop-shadow(0 12px 18px #08123047);
+  transform: translateY(-2px)scale(1.05);
+}
+
+.hs:active {
+  transform: scale(.95);
+}
+
+.hs:focus-visible {
+  outline-offset: 5px;
+  border-radius: 22px;
+  outline: 3px dashed #fffffff2;
+}
+
+.nav-tile {
+  position: relative;
+  display: block;
+  height: 12.4vh;
+  aspect-ratio: 101 / 113;
+  border-radius: 26%;
+  background: linear-gradient(180deg, #ffffff 0%, #f2f6ff 100%);
+  box-shadow:
+    0 14px 28px rgba(8, 18, 48, 0.24),
+    0 2px 4px rgba(8, 18, 48, 0.12),
+    inset 0 -3px 0 rgba(27, 27, 63, 0.06);
+}
+
+.nav-tile img,
+.nav-tile svg {
+  position: absolute;
+  top: 13%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 38%;
+  width: auto;
+}
+
+.nav-tile span {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 14%;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 2.1vh;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
+.is-active .nav-tile {
+  box-shadow:
+    0 16px 30px rgba(8, 18, 48, 0.3),
+    0 2px 4px rgba(8, 18, 48, 0.12),
+    inset 0 -3px 0 rgba(27, 27, 63, 0.06);
+}
+
+.logo-block img {
+  display: block;
+  height: 9.56vh;
+  width: auto;
+}
+
+.logo-block {
+  display: block;
+  margin-top: 1.48vh;
+  margin-left: 0.8vw;
+}
+
+.hero-left {
+  position: absolute;
+  inset: 0;
+}
+
+.hero-words {
+  white-space: nowrap;
+  font-family: var(--font-display);
+  paint-order: stroke fill;
+  -webkit-text-stroke: .36vh #fffffff7;
+  text-shadow: 0 .45vh #0914333d, 0 1vh 1.8vh #0914332e;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  font-size: 12.5vh;
+  font-weight: 800;
+  line-height: .92;
+  display: flex;
+  position: absolute;
+  top: 17.9vh;
+  left: 24.4%;
+  transform: translateX(-50%);
+}
+
+.hero-words > span {
+  display: block;
+}
+
+.hero-sub {
+  font-family: var(--font-body);
+  text-align: center;
+  white-space: nowrap;
+  color: #22284a;
+  text-shadow: 0 1px #fff9;
+  margin: 0;
+  font-size: 2.4vh;
+  font-weight: 700;
+  line-height: 1.62;
+  position: absolute;
+  top: 52.7vh;
+  left: 24.8%;
+  transform: translateX(-50%);
+}
+
+.heart {
+  color: #ef3340;
+  font-size: 1.1em;
+}
+
+.confetti {
+  opacity: .96;
+  border-radius: 999px;
+  position: absolute;
+}
+
+.confetti-a {
+  background: #e83c47;
+  width: 4vh;
+  height: .95vh;
+  top: 33.5%;
+  left: 11.9%;
+  transform: translate(-50%, -50%)rotate(40deg);
+}
+
+.confetti-b {
+  background: #289ee3;
+  width: 3.91vh;
+  height: .87vh;
+  top: 36.4%;
+  left: 10.9%;
+  transform: translate(-50%, -50%)rotate(10deg);
+}
+
+.confetti-c {
+  background: #3a934d;
+  width: 3.6vh;
+  height: .85vh;
+  top: 39.75%;
+  left: 11.5%;
+  transform: translate(-50%, -50%)rotate(-20deg);
+}
+
+.confetti-d {
+  background: #cc4f61;
+  width: 3.5vh;
+  height: .87vh;
+  top: 33.15%;
+  left: 39.35%;
+  transform: translate(-50%, -50%)rotate(-20deg);
+}
+
+.confetti-e {
+  background: #28a0df;
+  width: 3.15vh;
+  height: .9vh;
+  top: 36.25%;
+  left: 39.5%;
+  transform: translate(-50%, -50%);
+}
+
+.hero-buttons {
+  position: absolute;
+  left: 11.9%;
+  top: 62.5vh;
+  width: min(32.8vw, 49.3vh);
+  display: flex;
+  flex-direction: column;
+  gap: 2.2vh;
+}
+
+.hero-pill {
+  cursor: pointer;
+  border: 0;
+  border-radius: 999px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 11.1vh;
+  display: flex;
+  position: relative;
+  box-shadow: 0 .9vh 1.6vh #09143333, inset 0 -.35vh #09143317;
+}
+
+.pill-orange {
+  background: linear-gradient(90deg, #fbb100 0%, #fab607 45%, #f8c620 100%);
+}
+
+.pill-purple {
+  background: linear-gradient(90deg, #8a52ff 0%, #8146f8 55%, #7a3ff2 100%);
+}
+
+.pill-text {
+  font-family: var(--font-display);
+  color: #fff;
+  font-size: 3.7vh;
+  font-weight: 800;
+}
+
+.pill-orange .pill-text {
+  color: #101010;
+}
+
+.pill-icon {
+  position: absolute;
+  left: 1.5%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 8vh;
+}
+
+.pill-spark {
+  position: absolute;
+  right: 2.1%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 7.6vh;
+}
+
+.pill-purple .pill-spark {
+  height: 7.3vh;
+}
+
+.pill-purple .pill-icon {
+  left: 0.6%;
+  height: 8.15vh;
+}
+
+.pill-icon > svg, .pill-spark > svg, .pill-icon > img, .pill-spark > img {
+  width: auto;
+  height: 100%;
+  display: block;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@theme {
+  --color-kid-green: #25d366;
+  --color-kid-yellow: #facc15;
+  --color-kid-pink: #f472b6;
+  --color-kid-blue: #a78bfa;
+
+  /* Exact same as source: font-arabic -> Baloo Bhaijaan 2 */
+  --font-arabic: var(--font-baloo), "Tajawal", sans-serif;
+
+  --color-card: #ffffff;
+  --color-primary: #a132c8;
+  --color-primary-foreground: #ffffff;
+  --color-secondary: #f0f0f0;
+  --color-ring: #a132c8;
+}
+
+@layer base {
+  :root {
+    --kid-green: #25d366;
+    --kid-yellow: #facc15;
+    --kid-pink: #f472b6;
+    --kid-blue: #a78bfa;
+    --card: #ffffff;
+    --primary: #a132c8;
+    --primary-foreground: #ffffff;
+    --secondary: #f0f0f0;
+    --ring: #a132c8;
+  }
+}
+
+.shadow-swatch {
+  box-shadow: 0 8px 16px -6px oklch(0 0 0 / 0.35);
+}
+
+.shadow-frame {
+  box-shadow: 0 24px 60px -30px oklch(0.35 0.24 300 / 0.5);
+}
+
+@keyframes celebrate-burst {
+  0% {
+    transform: translate(0, 0) scale(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--tw-translate-x, 0), var(--tw-translate-y, 120px)) scale(0);
+    opacity: 0;
+  }
+}
+
+@keyframes celebrate-pop {
+  0% {
+    transform: scale(0.5);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes celebrate-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+@theme {
+  --animate-celebrate-burst: celebrate-burst 1.2s ease-out forwards;
+  --animate-celebrate-pop: celebrate-pop 0.5s ease-out forwards;
+  --animate-celebrate-bounce: celebrate-bounce 0.8s ease-in-out infinite;
+  
+  --animate-idle-bob: idle-bob 3.2s ease-in-out infinite alternate;
+  --animate-reverse-idle-bob: reverse-idle-bob 2.8s ease-in-out infinite alternate;
+  --animate-star-idle: star-idle 2.5s ease-in-out infinite alternate;
+
+  @keyframes idle-bob {
+    0%   { transform: translateY(0) rotate(-1.5deg) scale(1); }
+    50%  { transform: translateY(-6px) rotate(1.5deg) scale(1.03); }
+    100% { transform: translateY(-2px) rotate(-0.5deg) scale(1.01); }
+  }
+
+  @keyframes reverse-idle-bob {
+    0%   { transform: translateY(-2px) rotate(0.5deg) scale(1.01); }
+    50%  { transform: translateY(-6px) rotate(-1.5deg) scale(1.03); }
+    100% { transform: translateY(0) rotate(1.5deg) scale(1); }
+  }
+
+  @keyframes star-idle {
+    0%   { transform: scale(1) rotate(-10deg); }
+    50%  { transform: scale(1.18) rotate(10deg); }
+    100% { transform: scale(1.05) rotate(-5deg); }
+  }
+}

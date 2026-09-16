@@ -1,0 +1,663 @@
+@import url('https://fonts.googleapis.com/css2?family=Baloo+Bhaijaan+2:wght@700;800&family=Tajawal:wght@700;800;900&display=swap');
+
+.arabiblearn-theme {
+  --font-arabic: 'Baloo Bhaijaan 2', 'Tajawal', system-ui, -apple-system, sans-serif;
+  --radius: 0.625rem;
+  --background: oklch(0.96 0.07 215);
+  --foreground: oklch(0.22 0.07 255);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.22 0.07 255);
+  --primary: oklch(0.57 0.25 303);
+  --secondary: oklch(0.72 0.17 145);
+  --accent: oklch(0.82 0.18 88);
+  --accent-foreground: oklch(0.28 0.09 55);
+  --frame-cyan: oklch(0.76 0.16 213);
+  --grass-front: oklch(0.66 0.2 130);
+  --tile-red-top: oklch(0.68 0.24 15);
+  --tile-red-bottom: oklch(0.55 0.25 20);
+  --tile-green-top: oklch(0.78 0.24 125);
+  --tile-green-bottom: oklch(0.59 0.22 130);
+  --tile-orange-top: oklch(0.84 0.18 79);
+  --tile-orange-bottom: oklch(0.72 0.19 65);
+  --tile-purple-top: oklch(0.68 0.24 307);
+  --tile-purple-bottom: oklch(0.54 0.26 300);
+  --tile-blue-top: oklch(0.73 0.16 230);
+  --tile-blue-bottom: oklch(0.57 0.19 240);
+  --shadow-blue: oklch(0.32 0.1 240 / 0.28);
+  --white-gloss: oklch(1 0 0 / 0.48);
+  --tile-red-bevel: oklch(0.45 0.23 18);
+  --tile-green-bevel: oklch(0.48 0.2 132);
+  --tile-orange-bevel: oklch(0.6 0.18 62);
+  --tile-purple-bevel: oklch(0.43 0.25 301);
+  --tile-blue-bevel: oklch(0.46 0.18 242);
+  --banner-top: oklch(0.69 0.28 310);
+  --banner-bottom: oklch(0.39 0.23 294);
+  --banner-shadow: oklch(0.35 0.2 298);
+  --leaf-dark: oklch(0.43 0.18 138);
+
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.arabiblearn-theme * {
+  box-sizing: border-box;
+}
+
+.arabiblearn-theme button {
+  font: inherit;
+}
+
+/* Fullscreen Background & Scene */
+.arabiblearn-theme .alphabet-scene {
+  position: relative;
+  height: 100svh;
+  max-height: 100svh;
+  width: 100vw;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  font-family: var(--font-arabic);
+}
+
+.arabiblearn-theme .bg-image-wrapper {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Main Container Shell */
+.arabiblearn-theme .page-shell {
+  position: relative;
+  z-index: 10;
+  flex: 1;
+  width: min(97vw, 1280px);
+  /* Slightly widened outer max boundaries */
+  margin-inline: auto;
+  padding-inline: clamp(20px, 2.5vw, 36px);
+  padding-top: clamp(4px, 1vh, 10px);
+  padding-bottom: clamp(24px, 4vh, 45px);
+  display: flex;
+  flex-direction: column;
+}
+
+/* UNTOUCHED TOP HEADER */
+.arabiblearn-theme .learning-header {
+  direction: ltr;
+  display: grid;
+  grid-template-columns: 180px minmax(280px, 1fr) 160px;
+  align-items: center;
+  gap: 10px;
+  min-height: 0;
+  padding-block: clamp(2px, 0.6vh, 6px);
+}
+
+.arabiblearn-theme .brand-lockup {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.arabiblearn-theme .mascot {
+  width: clamp(55px, 6.5vw, 82px);
+  height: clamp(50px, 6vw, 75px);
+  object-fit: contain;
+  filter: drop-shadow(0 5px 7px var(--shadow-blue));
+  animation: mascot-idle-float 5s ease-in-out infinite;
+  transition: filter 250ms ease;
+  cursor: pointer;
+}
+
+.arabiblearn-theme .brand-lockup:hover .mascot,
+.arabiblearn-theme .mascot:hover {
+  animation: mascot-zoom-drift 4.5s ease-in-out infinite;
+  filter:
+    drop-shadow(0 0 16px oklch(0.88 0.28 310))
+    drop-shadow(0 0 36px oklch(0.72 0.32 210 / 0.65))
+    drop-shadow(0 16px 28px color-mix(in oklab, var(--primary) 55%, transparent))
+    brightness(1.2);
+  z-index: 30;
+}
+
+.arabiblearn-theme .brand-words {
+  direction: rtl;
+  display: flex;
+  flex-direction: column;
+  margin-left: -4px;
+  font-size: clamp(18px, 2.2vw, 28px);
+  font-weight: 800;
+  line-height: 0.9;
+  text-align: center;
+  -webkit-text-stroke: 1.5px var(--card);
+  paint-order: stroke fill;
+  text-shadow: 0 4px 7px var(--shadow-blue);
+  transition: transform 300ms cubic-bezier(.175, .885, .32, 1.275);
+}
+
+.arabiblearn-theme .brand-lockup:hover .brand-words {
+  transform: scale(1.06);
+}
+
+.arabiblearn-theme .brand-words span:first-child {
+  color: var(--primary);
+}
+
+.arabiblearn-theme .brand-words span:last-child {
+  color: var(--secondary);
+}
+
+.arabiblearn-theme .title-banner {
+  direction: rtl;
+  justify-self: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.5vw, 18px);
+  min-width: min(100%, 480px);
+  margin: 0;
+  border: 4px solid var(--card);
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--banner-top), var(--banner-bottom));
+  box-shadow: inset 0 0 0 3px var(--accent), inset 0 6px 10px var(--white-gloss), 0 5px 0 var(--banner-shadow), 0 0 14px color-mix(in oklab, var(--primary) 52%, transparent), 0 10px 16px var(--shadow-blue);
+  padding: 4px 18px 6px;
+  color: var(--card);
+  font-size: clamp(20px, 2.6vw, 36px);
+  font-weight: 800;
+  text-shadow: 0 3px 2px color-mix(in oklab, var(--banner-shadow) 70%, transparent);
+}
+
+.arabiblearn-theme .title-banner b {
+  color: var(--accent);
+  font-size: 0.75em;
+  display: inline-block;
+  animation: title-star-idle 2.5s ease-in-out infinite alternate;
+  cursor: pointer;
+}
+
+.arabiblearn-theme .title-banner b:hover {
+  animation: title-star-hover-rainbow 2s linear infinite;
+  filter:
+    drop-shadow(0 0 14px oklch(0.9 0.25 80))
+    drop-shadow(0 0 28px oklch(0.8 0.22 50));
+}
+
+.arabiblearn-theme .title-banner:hover b {
+  animation: title-star-hover-rainbow 2s linear infinite;
+}
+
+.arabiblearn-theme .learning-nav {
+  direction: rtl;
+  display: flex;
+  justify-content: flex-start;
+  gap: 8px;
+}
+
+.arabiblearn-theme .nav-card {
+  display: flex;
+  width: clamp(54px, 5.8vw, 70px);
+  height: clamp(56px, 6.2vw, 72px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: 3px solid var(--frame-cyan);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--foreground);
+  box-shadow: 0 6px 12px var(--shadow-blue);
+  cursor: pointer;
+  transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+.arabiblearn-theme .nav-card svg {
+  width: clamp(22px, 2.4vw, 28px);
+  height: clamp(22px, 2.4vw, 28px);
+  stroke-width: 3;
+}
+
+.arabiblearn-theme .nav-card span {
+  font-size: clamp(10px, 1.1vw, 13px);
+  font-weight: 800;
+}
+
+.arabiblearn-theme .nav-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 17px var(--shadow-blue);
+}
+
+.arabiblearn-theme .nav-home svg {
+  color: var(--primary);
+}
+
+.arabiblearn-theme .nav-content svg {
+  color: var(--secondary);
+}
+
+/* EXPANDED CENTRAL BOARD BOX */
+.arabiblearn-theme .board-wrap {
+  position: relative;
+  min-height: 0;
+  flex: 1;
+  width: 100%;
+  max-width: 1080px;
+  /* Increased from 960px for a slightly larger board */
+  margin-inline: auto;
+  margin-top: clamp(4px, 1vh, 12px);
+  padding: clamp(12px, 1.8vh, 20px) clamp(16px, 2.4vw, 30px);
+  /* Increased padding */
+  border: 4px solid var(--card);
+  border-radius: 26px;
+  background: oklch(1 0 0 / 0.96);
+  box-shadow: 0 10px 30px var(--shadow-blue);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.arabiblearn-theme .wavy-frame {
+  position: absolute;
+  inset: -5px;
+  z-index: 0;
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.arabiblearn-theme .wavy-frame path {
+  fill: none;
+  stroke: var(--frame-cyan);
+  stroke-width: 4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* SLIGHTLY LARGER 4x7 LETTER BUTTONS GRID */
+.arabiblearn-theme .letter-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: clamp(6px, 1vw, 12px);
+  /* Increased gap between tiles */
+  height: 100%;
+  align-content: space-between;
+}
+
+.arabiblearn-theme .letter-tile {
+  position: relative;
+  display: flex;
+  aspect-ratio: 1 / 0.8;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 2px solid color-mix(in oklab, var(--tile-top) 68%, var(--card));
+  border-radius: clamp(10px, 1.3vw, 16px);
+  background: linear-gradient(180deg, var(--tile-top), var(--tile-bottom));
+  color: var(--card);
+  box-shadow: inset 0 2px 2px color-mix(in oklab, var(--card) 75%, transparent), 0 3px 0 var(--tile-bevel), 0 5px 8px var(--shadow-blue);
+  cursor: pointer;
+  font-family: var(--font-arabic);
+  font-size: clamp(22px, 3.2vw, 46px);
+  /* Increased letter font size */
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: 0 2px 2px color-mix(in oklab, var(--foreground) 30%, transparent);
+  transition: transform 180ms cubic-bezier(.2, .9, .25, 1.35), box-shadow 180ms ease;
+}
+
+.arabiblearn-theme .letter-tile::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 6%;
+  width: 88%;
+  height: 32%;
+  border-radius: 999px 999px 60% 60%;
+  background: linear-gradient(180deg, color-mix(in oklab, var(--card) 75%, transparent), color-mix(in oklab, var(--card) 10%, transparent));
+  pointer-events: none;
+}
+
+.arabiblearn-theme .letter-tile span {
+  position: relative;
+  z-index: 1;
+  transform: translateY(-1px);
+}
+
+.arabiblearn-theme .letter-tile:hover {
+  transform: translateY(-3px) scale(1.04) rotate(-1deg);
+  box-shadow: inset 0 2px 2px color-mix(in oklab, var(--card) 75%, transparent), 0 6px 0 var(--tile-bevel), 0 10px 14px var(--shadow-blue);
+}
+
+.arabiblearn-theme .letter-tile:active {
+  transform: translateY(3px) scale(.95);
+  box-shadow: inset 0 2px 2px color-mix(in oklab, var(--card) 62%, transparent), 0 1px 0 var(--tile-bevel), 0 3px 5px var(--shadow-blue);
+}
+
+/* Tile Color Variants */
+.arabiblearn-theme .tile-red {
+  --tile-top: var(--tile-red-top);
+  --tile-bottom: var(--tile-red-bottom);
+  --tile-bevel: var(--tile-red-bevel);
+}
+
+.arabiblearn-theme .tile-green {
+  --tile-top: var(--tile-green-top);
+  --tile-bottom: var(--tile-green-bottom);
+  --tile-bevel: var(--tile-green-bevel);
+}
+
+.arabiblearn-theme .tile-orange {
+  --tile-top: var(--tile-orange-top);
+  --tile-bottom: var(--tile-orange-bottom);
+  --tile-bevel: var(--tile-orange-bevel);
+}
+
+.arabiblearn-theme .tile-purple {
+  --tile-top: var(--tile-purple-top);
+  --tile-bottom: var(--tile-purple-bottom);
+  --tile-bevel: var(--tile-purple-bevel);
+}
+
+.arabiblearn-theme .tile-blue {
+  --tile-top: var(--tile-blue-top);
+  --tile-bottom: var(--tile-blue-bottom);
+  --tile-bevel: var(--tile-blue-bevel);
+}
+
+.arabiblearn-theme .letter-tile.is-active {
+  animation: letter-pop 450ms ease;
+}
+
+/* FLOWERS & STAR ANCHORED TO BOARD EDGES */
+.arabiblearn-theme .side-flowers {
+  position: absolute;
+  z-index: 15;
+  display: flex;
+  flex-direction: column;
+}
+
+.arabiblearn-theme .left-flowers {
+  left: -22px;
+  bottom: 40%;
+}
+
+.arabiblearn-theme .side-flowers svg {
+  width: 50px;
+  height: 64px;
+  margin-top: -18px;
+  filter: drop-shadow(0 3px 2px var(--shadow-blue));
+  pointer-events: auto;
+  cursor: pointer;
+  transform-origin: bottom center;
+  transition: filter 250ms ease;
+}
+
+/* Stagger idle gentle sway per flower */
+.arabiblearn-theme .side-flowers svg:nth-child(1) { animation: flower-idle-sway 2.8s ease-in-out infinite alternate; }
+.arabiblearn-theme .side-flowers svg:nth-child(2) { animation: flower-idle-sway 2.4s ease-in-out infinite alternate-reverse; animation-delay: 0.3s; }
+.arabiblearn-theme .side-flowers svg:nth-child(3) { animation: flower-idle-sway 3.1s ease-in-out infinite alternate; animation-delay: 0.6s; }
+.arabiblearn-theme .side-flowers svg:nth-child(4) { animation: flower-idle-sway 2.6s ease-in-out infinite alternate-reverse; animation-delay: 0.9s; }
+
+.arabiblearn-theme .side-flowers svg:hover {
+  animation: flower-hover-party 1.5s ease-in-out infinite alternate !important;
+  filter:
+    drop-shadow(0 0 10px oklch(0.88 0.28 140))
+    drop-shadow(0 0 22px oklch(0.75 0.22 130 / 0.6))
+    brightness(1.18);
+  z-index: 25;
+}
+
+.arabiblearn-theme .flower-stem {
+  fill: none;
+  stroke: var(--grass-front);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.arabiblearn-theme .flower-leaf {
+  fill: var(--grass-front);
+  stroke: var(--leaf-dark);
+  stroke-width: 2;
+}
+
+.arabiblearn-theme .flower-green {
+  fill: oklch(0.74 0.25 130);
+}
+
+.arabiblearn-theme .flower-pink {
+  fill: oklch(0.67 0.26 5);
+}
+
+.arabiblearn-theme .flower-blue {
+  fill: oklch(0.68 0.2 235);
+}
+
+.arabiblearn-theme .flower-purple {
+  fill: oklch(0.57 0.26 300);
+}
+
+.arabiblearn-theme .flower-center {
+  fill: oklch(0.8 0.19 67);
+  stroke: oklch(1 0 0 / 0.75);
+  stroke-width: 2;
+}
+
+.arabiblearn-theme .right-ornaments {
+  position: absolute;
+  z-index: 15;
+  right: -24px;
+  bottom: 50%;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.arabiblearn-theme .gold-star {
+  display: block;
+  color: var(--accent);
+  font-size: clamp(48px, 5vw, 64px);
+  line-height: 1;
+  -webkit-text-stroke: 2px oklch(0.72 0.18 75);
+  filter: drop-shadow(0 3px 2px var(--shadow-blue));
+  animation: gold-star-idle-twirl 3.5s ease-in-out infinite alternate;
+  transition: filter 250ms ease;
+}
+
+.arabiblearn-theme .right-ornaments:hover .gold-star,
+.arabiblearn-theme .gold-star:hover {
+  animation: gold-star-hover-explode 1.8s ease-in-out infinite !important;
+  filter:
+    drop-shadow(0 0 20px oklch(0.95 0.3 80))
+    drop-shadow(0 0 42px oklch(0.85 0.25 60))
+    drop-shadow(0 0 60px oklch(0.75 0.2 45 / 0.5))
+    brightness(1.3);
+}
+
+/* CORNER ILLUSTRATIONS PINNED CLOSE TO BOX BOTTOM CORNERS */
+.arabiblearn-theme .apple-books {
+  position: absolute;
+  bottom: -12px;
+  left: -105px;
+  z-index: 20;
+  width: clamp(125px, 14vw, 175px);
+  height: auto;
+  filter: drop-shadow(0 6px 8px var(--shadow-blue));
+  pointer-events: auto;
+  cursor: pointer;
+  animation: corner-art-idle-bob 3.2s ease-in-out infinite alternate;
+  transition: filter 250ms ease;
+}
+
+.arabiblearn-theme .apple-books:hover {
+  animation: apple-books-super-bounce 1.4s ease-in-out infinite alternate !important;
+  filter:
+    drop-shadow(0 0 18px oklch(0.85 0.28 25))
+    drop-shadow(0 0 36px oklch(0.8 0.22 40 / 0.5))
+    drop-shadow(0 18px 28px var(--shadow-blue))
+    brightness(1.15) saturate(1.25);
+}
+
+.arabiblearn-theme .pencils {
+  position: absolute;
+  bottom: -12px;
+  right: -90px;
+  z-index: 20;
+  width: clamp(115px, 13vw, 160px);
+  height: auto;
+  filter: drop-shadow(0 6px 8px var(--shadow-blue));
+  pointer-events: auto;
+  cursor: pointer;
+  animation: corner-art-idle-bob 2.8s ease-in-out infinite alternate-reverse;
+  animation-delay: 0.5s;
+  transition: filter 250ms ease;
+}
+
+.arabiblearn-theme .pencils:hover {
+  animation: pencils-super-wobble 1.4s ease-in-out infinite alternate !important;
+  filter:
+    drop-shadow(0 0 18px oklch(0.82 0.28 145))
+    drop-shadow(0 0 36px oklch(0.72 0.22 145 / 0.5))
+    drop-shadow(0 18px 28px var(--shadow-blue))
+    brightness(1.15) saturate(1.25);
+}
+
+/* Keyframe Animations */
+@keyframes letter-pop {
+  0% {
+    transform: scale(.92);
+  }
+
+  45% {
+    transform: scale(1.15) rotate(2deg);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* ── Mascot ── */
+@keyframes mascot-idle-float {
+  0%   { transform: translateY(0) rotate(-1deg) scale(1); }
+  50%  { transform: translateY(-5px) rotate(1deg) scale(1.02); }
+  100% { transform: translateY(-2px) rotate(-0.5deg) scale(1.01); }
+}
+
+@keyframes mascot-zoom-drift {
+  0%   { transform: scale(1.25) translateY(0px)  translateX(0px)  rotate(-2deg); }
+  25%  { transform: scale(1.3)  translateY(-8px) translateX(4px)  rotate(2deg);  }
+  50%  { transform: scale(1.28) translateY(-5px) translateX(6px)  rotate(-1deg); }
+  75%  { transform: scale(1.3)  translateY(-9px) translateX(2px)  rotate(2.5deg);}
+  100% { transform: scale(1.25) translateY(0px)  translateX(0px)  rotate(-2deg); }
+}
+
+/* ── Title banner stars ── */
+@keyframes title-star-idle {
+  0%   { transform: scale(1) rotate(-10deg); }
+  50%  { transform: scale(1.18) rotate(10deg); }
+  100% { transform: scale(1.05) rotate(-5deg); }
+}
+
+@keyframes title-star-hover-rainbow {
+  0%   { transform: scale(1.5) rotate(0deg);   color: oklch(0.9 0.3 80);  }
+  16%  { transform: scale(1.6) rotate(60deg);  color: oklch(0.85 0.3 140); }
+  33%  { transform: scale(1.7) rotate(120deg); color: oklch(0.8 0.3 210);  }
+  50%  { transform: scale(1.6) rotate(180deg); color: oklch(0.8 0.3 280);  }
+  66%  { transform: scale(1.55) rotate(240deg); color: oklch(0.82 0.3 20);  }
+  83%  { transform: scale(1.5) rotate(300deg); color: oklch(0.88 0.28 55);  }
+  100% { transform: scale(1.5) rotate(360deg); color: oklch(0.9 0.3 80);   }
+}
+
+/* ── Apple & Books ── */
+@keyframes corner-art-idle-bob {
+  0%   { transform: translateY(0) rotate(-1.5deg) scale(1); }
+  50%  { transform: translateY(-6px) rotate(1.5deg) scale(1.03); }
+  100% { transform: translateY(-2px) rotate(-0.5deg) scale(1.01); }
+}
+
+@keyframes apple-books-super-bounce {
+  0%   { transform: scale(1) rotate(0deg) translateY(0); }
+  15%  { transform: scale(1.28) rotate(-14deg) translateY(-24px); }
+  30%  { transform: scale(0.9) rotate(8deg) translateY(6px); }
+  50%  { transform: scale(1.22) rotate(-10deg) translateY(-18px); }
+  65%  { transform: scale(0.95) rotate(5deg) translateY(3px); }
+  80%  { transform: scale(1.15) rotate(-6deg) translateY(-12px); }
+  100% { transform: scale(1.1) rotate(-2deg) translateY(-8px); }
+}
+
+/* ── Pencils ── */
+@keyframes pencils-super-wobble {
+  0%   { transform: scale(1) rotate(0deg) translateY(0); }
+  15%  { transform: scale(1.28) rotate(16deg) translateY(-24px); }
+  30%  { transform: scale(0.9) rotate(-9deg) translateY(6px); }
+  50%  { transform: scale(1.22) rotate(12deg) translateY(-18px); }
+  65%  { transform: scale(0.95) rotate(-6deg) translateY(3px); }
+  80%  { transform: scale(1.15) rotate(8deg) translateY(-12px); }
+  100% { transform: scale(1.1) rotate(4deg) translateY(-8px); }
+}
+
+/* ── Flowers ── */
+@keyframes flower-idle-sway {
+  0%   { transform: rotate(-5deg) scale(1) translateY(0); }
+  50%  { transform: rotate(5deg) scale(1.08) translateY(-4px); }
+  100% { transform: rotate(-3deg) scale(1.04) translateY(-2px); }
+}
+
+@keyframes flower-hover-party {
+  0%   { transform: scale(1.25) rotate(-18deg) translateY(-8px);  }
+  15%  { transform: scale(1.55) rotate(14deg) translateY(-22px);  }
+  30%  { transform: scale(1.2) rotate(-10deg) translateY(-6px);   }
+  50%  { transform: scale(1.5) rotate(20deg) translateY(-20px);   }
+  70%  { transform: scale(1.22) rotate(-12deg) translateY(-8px);  }
+  85%  { transform: scale(1.45) rotate(16deg) translateY(-18px);  }
+  100% { transform: scale(1.3) rotate(-8deg) translateY(-12px);   }
+}
+
+/* ── Gold star ── */
+@keyframes gold-star-idle-twirl {
+  0%   { transform: rotate(8deg) scale(1); }
+  40%  { transform: rotate(24deg) scale(1.12); }
+  100% { transform: rotate(14deg) scale(1.06); }
+}
+
+@keyframes gold-star-hover-explode {
+  0%   { transform: rotate(0deg) scale(1.1); }
+  10%  { transform: rotate(36deg) scale(1.55); }
+  20%  { transform: rotate(72deg) scale(1.2); }
+  35%  { transform: rotate(108deg) scale(1.6); }
+  50%  { transform: rotate(180deg) scale(1.25); }
+  65%  { transform: rotate(252deg) scale(1.55); }
+  80%  { transform: rotate(324deg) scale(1.2); }
+  100% { transform: rotate(360deg) scale(1.15); }
+}
+
+@media (max-width: 650px) {
+  .arabiblearn-theme .page-shell {
+    padding-bottom: 45px;
+  }
+
+  .arabiblearn-theme .learning-header {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "brand nav" "title title";
+    gap: 4px;
+  }
+
+  .arabiblearn-theme .brand-lockup {
+    grid-area: brand;
+  }
+
+  .arabiblearn-theme .learning-nav {
+    grid-area: nav;
+  }
+
+  .arabiblearn-theme .title-banner {
+    grid-area: title;
+    width: 100%;
+  }
+
+  .arabiblearn-theme .letter-tile {
+    font-size: clamp(20px, 6.5vw, 36px);
+  }
+}
