@@ -1,3 +1,4 @@
+"use client";
 import { PinkStar, SmileyStar } from "./hero-icons";
 
 /**
@@ -59,3 +60,4 @@ export default function HeroBlock() {
     </div>
   );
 }
+

@@ -1,469 +1,375 @@
-export type DotSpec = {
-  x: number;
-  y: number;
-  r?: number;
-};
-
-export type ChevronSpec = {
-  x: number;
-  y: number;
-  rotate: number;
-};
-
+/**
+ * Each letter is drawn as a set of "tube" strokes: a thick black stroke with a
+ * slightly thinner fill stroke on top, which produces the outlined look of a
+ * writing worksheet. Strokes must be traced in order, following the arrows.
+ * Coordinates follow the uploaded worksheet drawings 1:1.
+ */
 export type LetterSpec = {
   id: string;
   name: string;
-  arabicName: string;
   viewBox: string;
-  /** Ordered guide strokes for hit-detection, from first pen-down to last pen-up. */
+  /** Ordered guide strokes, from first pen-down to last pen-up. */
   strokes: string[];
-  /** Optional dot markers (e.g. Baa, Taa, Thaa, Jim, etc.) */
-  dots?: DotSpec[];
-  /** Optional custom chevron arrows */
-  chevrons?: ChevronSpec[];
-  /** Optional: path to reference image */
-  imageSrc?: string;
+  /** Optional per-stroke tube thickness (defaults to 46). */
+  widths?: number[];
+  /** Decorative dots (above or below the letter body). */
+  dots?: Array<{ cx: number; cy: number }>;
+  /** Outer radius of the decorative dots (defaults to 20). */
+  dotR?: number;
+  /** Worksheet arrow positions along each stroke, from 0 (start) to 1 (end). */
+  guideArrows?: number[][];
+  /** Treat every body path as one uninterrupted pen-down sequence. */
+  continuousBody?: boolean;
 };
 
 export const LETTERS: Record<string, LetterSpec> = {
-  // أ - Alif (with Hamza)
   alif: {
     id: "alif",
-    name: "alif",
-    arabicName: "أَلِف",
-    viewBox: "0 0 360 440",
+    name: "ألف",
+    viewBox: "0 0 347 597",
     strokes: [
-      // 1. Hamza curve and horizontal sweep
-      "M 210 50 C 180 15, 120 40, 140 85 C 150 105, 175 110, 195 115 L 130 125",
-      // 2. Vertical main stem (Top to Bottom)
-      "M 180 160 L 180 400",
+      // One continuous hamza: begin at the upper-right dot, follow the broad
+      // open C-shaped head around its top and left edge, sweep diagonally into
+      // the lower-right corner, then finish leftward along the straight base.
+      "M176 48 C 151 37, 128 42, 119 61 C 108 84, 115 108, 133 122 C 148 134, 169 136, 196 133 L197 147 C 168 148, 137 148, 106 148",
+      // The long alif body, traced from its top start point downward.
+      "M163 212 L176 512",
     ],
-    dots: [
-      // Dot at the start of the hamza loop
-      { x: 210, y: 50, r: 14 },
-      // Dot at the top of the main stem
-      { x: 180, y: 160, r: 14 },
-    ],
-    chevrons: [
-      // Arrow at the end of the hamza's leftward tail
-      { x: 130, y: 125, rotate: 180 },
-      // Arrow pointing down, near the bottom of the stem
-      { x: 180, y: 340, rotate: 90 },
-    ],
+    widths: [28, 56],
   },
-
-  // ب - Baa (Boat + 1 Dot Below)
   baa: {
     id: "baa",
-    name: "baa",
-    arabicName: "بَاء",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 290 120 C 310 260, 250 280, 180 280 C 110 280, 50 260, 70 120",
-    ],
-    dots: [{ x: 180, y: 335, r: 18 }],
-    chevrons: [
-      { x: 285, y: 190, rotate: 105 },
-      { x: 180, y: 280, rotate: 180 },
-      { x: 75, y: 190, rotate: -75 },
-    ],
+    name: "باء",
+    viewBox: "0 0 438 570",
+    strokes: ["M352 190 C 372 290, 300 330, 215 330 C 130 330, 55 295, 70 215"],
+    widths: [56],
+    dots: [{ cx: 218, cy: 412 }],
+    dotR: 30,
   },
-
-  // ت - Tahaa / Taa (Boat + 2 Dots Above)
-  tahaa: {
-    id: "tahaa",
-    name: "tahaa",
-    arabicName: "تَاء",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 290 120 C 310 260, 250 280, 180 280 C 110 280, 50 260, 70 120",
-    ],
+  taa: {
+    id: "taa",
+    name: "تاء",
+    viewBox: "0 0 432 578",
+    strokes: ["M345 190 C 368 285, 295 325, 212 325 C 128 325, 52 292, 66 215"],
+    widths: [56],
     dots: [
-      { x: 145, y: 70, r: 18 },
-      { x: 215, y: 70, r: 18 },
+      { cx: 176, cy: 182 },
+      { cx: 246, cy: 182 },
     ],
-    chevrons: [
-      { x: 285, y: 190, rotate: 105 },
-      { x: 180, y: 280, rotate: 180 },
-      { x: 75, y: 190, rotate: -75 },
-    ],
+    dotR: 30,
   },
-
-  // ت - Thaa (alias to tahaa)
   thaa: {
     id: "thaa",
-    name: "thaa",
-    arabicName: "تَاء",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 290 120 C 310 260, 250 280, 180 280 C 110 280, 50 260, 70 120",
-    ],
+    name: "ثاء",
+    viewBox: "0 0 402 595",
+    strokes: ["M340 200 C 362 295, 290 340, 205 340 C 120 340, 45 305, 58 228"],
+    widths: [55],
     dots: [
-      { x: 145, y: 70, r: 18 },
-      { x: 215, y: 70, r: 18 },
+      { cx: 196, cy: 175 },
+      { cx: 162, cy: 240 },
+      { cx: 232, cy: 240 },
     ],
-    chevrons: [
-      { x: 285, y: 190, rotate: 105 },
-      { x: 180, y: 280, rotate: 180 },
-      { x: 75, y: 190, rotate: -75 },
-    ],
+    dotR: 28,
   },
-
-  // ث - Thaaa (Boat + 3 Dots Above)
-  thaaa: {
-    id: "thaaa",
-    name: "thaaa",
-    arabicName: "ثَاء",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 290 120 C 310 260, 250 280, 180 280 C 110 280, 50 260, 70 120",
-    ],
-    dots: [
-      { x: 145, y: 75, r: 16 },
-      { x: 215, y: 75, r: 16 },
-      { x: 180, y: 35, r: 16 },
-    ],
-    chevrons: [
-      { x: 285, y: 190, rotate: 105 },
-      { x: 180, y: 280, rotate: 180 },
-      { x: 75, y: 190, rotate: -75 },
-    ],
-  },
-
-  // ج - Jim (Head + Tail + 1 Dot Inside)
   jim: {
     id: "jim",
-    name: "jim",
-    arabicName: "جِيم",
-    viewBox: "0 0 360 360",
+    name: "جيم",
+    viewBox: "0 0 318 599",
     strokes: [
-      "M 260 70 C 220 50, 140 50, 100 80",
-      "M 100 80 C 60 120, 60 210, 130 250 C 200 280, 280 250, 270 190 C 260 140, 190 140, 170 170",
+      // Reference upper sweep: a shallow left-to-right arc ending in the rounded tip.
+      "M52 198 C 94 173, 126 178, 166 195 C 208 213, 246 226, 288 225",
+      // Reference lower stroke: cross beneath the upper sweep, then form the deep open bowl.
+      "M288 225 C 271 231, 256 240, 243 246 C 184 237, 136 253, 91 287 C 48 320, 34 364, 43 407 C 54 459, 101 486, 160 487 C 204 488, 245 477, 276 458",
     ],
-    dots: [{ x: 180, y: 180, r: 20 }],
+    widths: [43, 47],
+    dots: [{ cx: 157, cy: 352 }],
+    dotR: 27,
+    guideArrows: [[0.03, 0.98], [0.03, 0.48, 0.98]],
+    continuousBody: true,
   },
-
-  // ح - Haa (Head + Tail)
   haa: {
     id: "haa",
-    name: "haa",
-    arabicName: "حَاء",
-    viewBox: "0 0 360 360",
+    name: "حاء",
+    viewBox: "0 0 318 599",
     strokes: [
-      "M 260 70 C 220 50, 140 50, 100 80",
-      "M 100 80 C 60 120, 60 210, 130 250 C 200 280, 280 250, 270 190 C 260 140, 190 140, 170 170",
+      // Same worksheet body as جيم, without a dot.
+      "M52 198 C 94 173, 126 178, 166 195 C 208 213, 246 226, 288 225",
+      "M288 225 C 271 231, 256 240, 243 246 C 184 237, 136 253, 91 287 C 48 320, 34 364, 43 407 C 54 459, 101 486, 160 487 C 204 488, 245 477, 276 458",
     ],
+    widths: [43, 47],
+    guideArrows: [[0.03, 0.98], [0.03, 0.48, 0.98]],
+    continuousBody: true,
   },
-
-  // خ - Khaa (Head + Tail + 1 Dot Above)
   khaa: {
     id: "khaa",
-    name: "khaa",
-    arabicName: "خَاء",
-    viewBox: "0 0 360 360",
+    name: "خاء",
+    viewBox: "0 0 318 599",
     strokes: [
-      "M 260 70 C 220 50, 140 50, 100 80",
-      "M 100 80 C 60 120, 60 210, 130 250 C 200 280, 280 250, 270 190 C 260 140, 190 140, 170 170",
+      // Same worksheet body as جيم, with its dot moved above.
+      "M52 198 C 94 173, 126 178, 166 195 C 208 213, 246 226, 288 225",
+      "M288 225 C 271 231, 256 240, 243 246 C 184 237, 136 253, 91 287 C 48 320, 34 364, 43 407 C 54 459, 101 486, 160 487 C 204 488, 245 477, 276 458",
     ],
-    dots: [{ x: 180, y: 30, r: 20 }],
+    widths: [43, 47],
+    dots: [{ cx: 157, cy: 106 }],
+    dotR: 27,
+    guideArrows: [[0.03, 0.98], [0.03, 0.48, 0.98]],
+    continuousBody: true,
   },
-
-  // د - Daal
   daal: {
     id: "daal",
-    name: "daal",
-    arabicName: "دَال",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 230 80 C 240 130, 220 200, 180 230 C 140 260, 90 250, 70 230",
-    ],
+    name: "دال",
+    viewBox: "0 0 327 593",
+    strokes: ["M170 175 C 250 250, 280 302, 265 352 C 245 400, 130 402, 62 392"],
+    widths: [54],
   },
-
-  // ذ - Thaal (Daal + 1 Dot Above)
   thaal: {
     id: "thaal",
-    name: "thaal",
-    arabicName: "ذَال",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 230 80 C 240 130, 220 200, 180 230 C 140 260, 90 250, 70 230",
-    ],
-    dots: [{ x: 210, y: 55, r: 20 }],
+    name: "ذال",
+    viewBox: "0 0 290 593",
+    strokes: ["M150 212 C 225 282, 250 326, 235 366 C 215 406, 115 410, 58 404"],
+    widths: [52],
+    dots: [{ cx: 133, cy: 116 }],
+    dotR: 28,
   },
-
-  // ر - Raa
   raa: {
     id: "raa",
-    name: "raa",
-    arabicName: "رَاء",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 210 80 C 220 120, 200 180, 160 230 C 130 265, 80 270, 60 250",
-    ],
+    name: "راء",
+    viewBox: "0 0 276 592",
+    strokes: ["M172 120 C 205 200, 200 300, 140 360 C 106 394, 80 400, 62 402"],
+    widths: [50],
   },
-
-  // ز - Zaa (Raa + 1 Dot Above)
-  zaa: {
-    id: "zaa",
-    name: "zaa",
-    arabicName: "زَاي",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 210 80 C 220 120, 200 180, 160 230 C 130 265, 80 270, 60 250",
-    ],
-    dots: [{ x: 200, y: 55, r: 20 }],
+  zay: {
+    id: "zay",
+    name: "زاي",
+    viewBox: "0 0 276 592",
+    strokes: ["M172 190 C 205 268, 200 366, 140 424 C 106 456, 80 462, 62 464"],
+    widths: [50],
+    dots: [{ cx: 148, cy: 112 }],
+    dotR: 26,
   },
-
-  // س - Sin
   sin: {
     id: "sin",
-    name: "sin",
-    arabicName: "سِين",
-    viewBox: "0 0 360 360",
+    name: "سين",
+    viewBox: "0 0 430 570",
     strokes: [
-      "M 300 130 C 300 170, 270 170, 260 130",
-      "M 260 130 C 260 170, 230 170, 220 130",
-      "M 220 130 C 200 190, 210 260, 150 270 C 90 280, 60 240, 60 190",
+      "M382 190 C 410 220, 407 285, 382 307 C 356 329, 322 312, 315 278 L305 225 C 300 196, 270 194, 265 225 L265 283 C 265 317, 236 328, 220 298 L205 255 C 196 227, 176 226, 178 257 L188 321 C 199 385, 163 425, 108 429 C 54 433, 22 394, 27 337 C 30 302, 39 273, 54 252",
     ],
+    widths: [46],
+    guideArrows: [[0.03, 0.23, 0.42, 0.64, 0.96]],
   },
-
-  // ش - Shin (Sin + 3 Dots Above)
-  chin: {
-    id: "chin",
-    name: "chin",
-    arabicName: "شِين",
-    viewBox: "0 0 360 360",
+  shin: {
+    id: "shin",
+    name: "شين",
+    viewBox: "0 0 430 570",
     strokes: [
-      "M 300 130 C 300 170, 270 170, 260 130",
-      "M 260 130 C 260 170, 230 170, 220 130",
-      "M 220 130 C 200 190, 210 260, 150 270 C 90 280, 60 240, 60 190",
+      "M382 190 C 410 220, 407 285, 382 307 C 356 329, 322 312, 315 278 L305 225 C 300 196, 270 194, 265 225 L265 283 C 265 317, 236 328, 220 298 L205 255 C 196 227, 176 226, 178 257 L188 321 C 199 385, 163 425, 108 429 C 54 433, 22 394, 27 337 C 30 302, 39 273, 54 252",
     ],
+    widths: [46],
     dots: [
-      { x: 230, y: 85, r: 16 },
-      { x: 290, y: 85, r: 16 },
-      { x: 260, y: 55, r: 16 },
+      { cx: 287, cy: 96 },
+      { cx: 253, cy: 148 },
+      { cx: 321, cy: 148 },
     ],
+    dotR: 24,
+    guideArrows: [[0.03, 0.23, 0.42, 0.64, 0.96]],
   },
-
-  // ص - Saad
   saad: {
     id: "saad",
-    name: "saad",
-    arabicName: "صَاد",
-    viewBox: "0 0 360 360",
+    name: "صاد",
+    viewBox: "0 0 430 570",
+    // Identical to daad's worksheet shape, but with no dot.
     strokes: [
-      "M 220 160 C 240 90, 320 90, 320 140 C 320 180, 270 180, 220 160",
-      "M 220 160 C 180 160, 160 180, 120 220 C 80 260, 80 300, 130 300 C 190 300, 220 270, 220 160",
+      // The worksheet's right-hand teardrop, flowing back into the join.
+      "M227 306 C 250 262, 283 218, 327 206 C 374 193, 409 226, 410 266 C 411 307, 373 333, 329 334 C 289 335, 252 324, 227 306",
+      // Join, tall shoulder, and the broad left bowl.
+      "M227 306 C 206 316, 196 301, 190 272 L181 236 C 173 205, 151 205, 154 239 L170 321 C 182 384, 153 422, 104 425 C 53 429, 24 390, 29 338 C 32 306, 40 280, 52 261",
     ],
+    widths: [39, 43],
+    guideArrows: [[0.04, 0.5, 0.96], [0.04, 0.5, 0.96]],
+    continuousBody: true,
   },
-
-  // ض - Daad (Saad + 1 Dot Above)
   daad: {
     id: "daad",
-    name: "daad",
-    arabicName: "ضَاد",
-    viewBox: "0 0 360 360",
+    name: "ضاد",
+    viewBox: "0 0 430 570",
     strokes: [
-      "M 220 160 C 240 90, 320 90, 320 140 C 320 180, 270 180, 220 160",
-      "M 220 160 C 180 160, 160 180, 120 220 C 80 260, 80 300, 130 300 C 190 300, 220 270, 220 160",
+      // The worksheet's right-hand teardrop, flowing back into the join.
+      "M227 306 C 250 262, 283 218, 327 206 C 374 193, 409 226, 410 266 C 411 307, 373 333, 329 334 C 289 335, 252 324, 227 306",
+      // Join, tall shoulder, and the broad left bowl.
+      "M227 306 C 206 316, 196 301, 190 272 L181 236 C 173 205, 151 205, 154 239 L170 321 C 182 384, 153 422, 104 425 C 53 429, 24 390, 29 338 C 32 306, 40 280, 52 261",
     ],
-    dots: [{ x: 270, y: 65, r: 20 }],
+    widths: [39, 43],
+    dots: [{ cx: 346, cy: 130 }],
+    dotR: 24,
+    guideArrows: [[0.04, 0.5, 0.96], [0.04, 0.5, 0.96]],
+    continuousBody: true,
   },
-
-  // ط - Taaa
-  taaa: {
-    id: "taaa",
-    name: "taaa",
-    arabicName: "طَاء",
-    viewBox: "0 0 360 360",
+  taah: {
+    id: "taah",
+    name: "طاء",
+    viewBox: "0 0 330 597",
     strokes: [
-      "M 240 50 L 240 210",
-      "M 240 210 C 290 210, 300 260, 250 270 C 200 280, 150 260, 140 220 C 130 180, 160 160, 200 160",
+      "M92 150 L92 412",
+      "M92 412 C 117 372, 136 330, 170 306 C 205 281, 254 292, 280 328 C 307 365, 297 407, 261 433 C 213 466, 119 459, 43 430",
     ],
+    widths: [42, 42],
+    guideArrows: [[0.03, 0.98], [0.04, 0.38, 0.7, 0.97]],
+    continuousBody: true,
   },
-
-  // ظ - Thaad (Taaa + 1 Dot Above)
-  thaad: {
-    id: "thaad",
-    name: "thaad",
-    arabicName: "ظَاء",
-    viewBox: "0 0 360 360",
+  thaah: {
+    id: "thaah",
+    name: "ظاء",
+    viewBox: "0 0 330 597",
     strokes: [
-      "M 240 50 L 240 210",
-      "M 240 210 C 290 210, 300 260, 250 270 C 200 280, 150 260, 140 220 C 130 180, 160 160, 200 160",
+      "M92 150 L92 412",
+      "M92 412 C 117 372, 136 330, 170 306 C 205 281, 254 292, 280 328 C 307 365, 297 407, 261 433 C 213 466, 119 459, 43 430",
     ],
-    dots: [{ x: 275, y: 130, r: 20 }],
+    widths: [42, 42],
+    dots: [{ cx: 211, cy: 251 }],
+    dotR: 25,
+    guideArrows: [[0.03, 0.98], [0.04, 0.38, 0.7, 0.97]],
+    continuousBody: true,
   },
-
-  // ع - Ain
-  aaa: {
-    id: "aaa",
-    name: "aaa",
-    arabicName: "عَين",
-    viewBox: "0 0 360 360",
+  ain: {
+    id: "ain",
+    name: "عين",
+    viewBox: "0 0 300 570",
     strokes: [
-      "M 250 80 C 230 40, 160 40, 140 80 C 120 120, 160 150, 190 150",
-      "M 190 150 C 150 130, 80 150, 60 200 C 40 260, 110 310, 200 300 C 280 290, 310 240, 310 190",
+      "M212 122 C 150 92, 70 118, 72 180 C 74 226, 120 246, 166 240",
+      "M238 240 C 150 230, 60 266, 62 350 C 64 432, 176 462, 252 420",
     ],
+    widths: [46, 46],
+    continuousBody: true,
   },
-
-  // غ - Ghain (Ain + 1 Dot Above)
-  gaa: {
-    id: "gaa",
-    name: "gaa",
-    arabicName: "غَين",
-    viewBox: "0 0 360 360",
+  ghain: {
+    id: "ghain",
+    name: "غين",
+    viewBox: "0 0 300 620",
     strokes: [
-      "M 250 80 C 230 40, 160 40, 140 80 C 120 120, 160 150, 190 150",
-      "M 190 150 C 150 130, 80 150, 60 200 C 40 260, 110 310, 200 300 C 280 290, 310 240, 310 190",
+      "M212 182 C 150 152, 70 178, 72 240 C 74 286, 120 306, 166 300",
+      "M238 300 C 150 290, 60 326, 62 410 C 64 492, 176 522, 252 480",
     ],
-    dots: [{ x: 200, y: 30, r: 20 }],
+    widths: [46, 46],
+    dots: [{ cx: 142, cy: 82 }],
+    dotR: 26,
+    continuousBody: true,
   },
-
-  // ف - Faa
   faa: {
     id: "faa",
-    name: "faa",
-    arabicName: "فَاء",
-    viewBox: "0 0 360 360",
+    name: "فاء",
+    viewBox: "0 0 400 595",
     strokes: [
-      "M 220 160 C 260 90, 310 90, 310 150 C 310 210, 250 240, 190 220",
-      "M 190 220 C 150 230, 90 240, 60 210 C 40 180, 80 160, 110 160",
+      // One continuous spiral: rounded head first, then the long left sweep.
+      "M334 211 C 307 181, 264 180, 236 207 C 205 237, 210 286, 244 310 C 273 330, 312 324, 338 302 C 352 282, 350 247, 334 211 C 355 252, 354 303, 338 335 C 309 393, 222 412, 139 402 C 76 394, 39 363, 42 320 C 44 293, 48 273, 55 260",
     ],
-    dots: [{ x: 260, y: 65, r: 20 }],
+    widths: [42],
+    dots: [{ cx: 292, cy: 119 }],
+    dotR: 25,
+    guideArrows: [[0.03, 0.22, 0.43, 0.68, 0.97]],
   },
-
-  // ق - Qaaf
-  kaa: {
-    id: "kaa",
-    name: "kaa",
-    arabicName: "قَاف",
-    viewBox: "0 0 360 360",
+  qaf: {
+    id: "qaf",
+    name: "قاف",
+    viewBox: "0 0 325 595",
     strokes: [
-      "M 220 150 C 260 80, 310 80, 310 140 C 310 200, 250 230, 190 210",
-      "M 190 210 C 140 240, 80 260, 60 200 C 40 150, 80 130, 110 140",
+      // Continuous rounded spiral and broad tail from the supplied worksheet.
+      "M272 217 C 247 181, 201 171, 166 198 C 130 226, 130 279, 164 309 C 195 336, 238 335, 270 309 C 285 286, 284 249, 272 217 C 291 258, 291 310, 277 344 C 254 401, 192 430, 126 421 C 69 413, 36 380, 36 333 C 36 308, 39 286, 43 272",
     ],
+    widths: [42],
     dots: [
-      { x: 230, y: 55, r: 18 },
-      { x: 290, y: 55, r: 18 },
+      { cx: 174, cy: 126 },
+      { cx: 244, cy: 126 },
     ],
+    dotR: 26,
+    guideArrows: [[0.03, 0.22, 0.43, 0.68, 0.97]],
   },
-
-  // ك - Kaaf
-  kaaf: {
-    id: "kaaf",
-    name: "kaaf",
-    arabicName: "كَاف",
-    viewBox: "0 0 360 360",
+  kaf: {
+    id: "kaf",
+    name: "كاف",
+    viewBox: "0 0 352 598",
     strokes: [
-      "M 240 50 L 240 200 C 240 260, 280 270, 200 270 C 120 270, 100 200, 130 170",
-      "M 200 150 C 160 140, 170 170, 200 165 C 230 160, 220 185, 180 190",
+      // long descending stroke: down the right side, round the bottom bowl, up left
+      "M305 155 L305 350 Q305 425 190 425 Q57 425 57 305",
+      // the small zigzag hamza inside the bowl
+      "M215 255 L152 282 L205 318 L150 337",
     ],
+    widths: [46, 26],
   },
-
-  // ل - Lam
   lam: {
     id: "lam",
-    name: "lam",
-    arabicName: "لَام",
-    viewBox: "0 0 360 360",
-    strokes: [
-      "M 200 40 L 200 210 C 200 275, 240 285, 160 285 C 80 285, 80 215, 110 180",
-    ],
+    name: "لام",
+    viewBox: "0 0 293 593",
+    strokes: ["M247 95 L247 355 Q247 455 152 455 Q57 455 57 305"],
+    widths: [50],
   },
-
-  // م - Meem
-  mim: {
-    id: "mim",
-    name: "mim",
-    arabicName: "مِيم",
-    viewBox: "0 0 360 360",
+  meem: {
+    id: "meem",
+    name: "ميم",
+    viewBox: "0 0 293 590",
     strokes: [
-      "M 180 110 C 150 70, 110 90, 110 130 C 110 170, 150 190, 180 170 C 210 150, 210 110, 180 110",
-      "M 180 170 L 180 300",
+      // the round head, traced anti-clockwise from the left
+      "M105 258 C 98 148, 265 140, 265 238 C 265 318, 145 330, 106 268",
+      // the tail dropping straight down
+      "M96 288 Q62 300 62 458",
     ],
+    widths: [48, 48],
+    continuousBody: true,
   },
-
-  // ن - Noun
-  noun: {
-    id: "noun",
-    name: "noun",
-    arabicName: "نُون",
-    viewBox: "0 0 360 360",
+  nun: {
+    id: "nun",
+    name: "نون",
+    viewBox: "0 0 315 593",
     strokes: [
-      "M 270 110 C 280 190, 280 250, 190 260 C 100 270, 70 220, 80 140",
+      "M258 230 C 258 306, 250 372, 190 390 C 120 410, 60 382, 52 302 C 46 252, 52 234, 58 224",
     ],
-    dots: [{ x: 180, y: 90, r: 20 }],
+    widths: [50],
+    dots: [{ cx: 155, cy: 175 }],
+    dotR: 26,
   },
-
-  // ه - Haaa
-  haaa: {
-    id: "haaa",
-    name: "haaa",
-    arabicName: "هَاء",
-    viewBox: "0 0 360 360",
+  hah: {
+    id: "hah",
+    name: "هاء",
+    // haa-2.png worksheet, numbered 1..6: ONE continuous stroke.
+    // 1 start at the little beak (upper left) and arch over the top to the right,
+    // 2 down the right side, 3 round the bottom-right of the bowl,
+    // 4 back left underneath and up the left side of the inner oval,
+    // 5 over the oval top and down the crossing curve to the base,
+    // 6 finally run left along the flat base to the tail tip.
+    viewBox: "0 0 361 587",
     strokes: [
-      "M 180 70 C 230 70, 260 120, 240 160 C 220 200, 170 210, 140 190 C 110 170, 110 130, 140 110 C 160 95, 185 70, 180 70",
+      "M150 292 C 160 266, 190 246, 222 246 C 264 246, 301 277, 321 314 C 338 348, 340 386, 321 408 C 306 426, 285 431, 262 430 C 236 431, 211 424, 192 410 C 171 394, 162 370, 167 343 C 172 315, 190 298, 211 299 C 234 300, 246 325, 244 353 C 242 382, 250 408, 262 424 C 220 430, 120 434, 20 423",
     ],
+    widths: [26],
+    guideArrows: [[0.04, 0.22, 0.4, 0.58, 0.76, 0.95]],
   },
-
-  // و - Waaw
-  waaw: {
-    id: "waaw",
-    name: "waaw",
-    arabicName: "وَاو",
-    viewBox: "0 0 360 360",
+  waw: {
+    id: "waw",
+    name: "واو",
+    // waaw-2.png worksheet: ONE bold circular head with a single teardrop
+    // counter, tail flowing from the head's right side down and hooking left.
+    // Single continuous stroke: start at the right of the head, trace the
+    // loop clockwise (bottom -> left -> top -> right), then descend the tail.
+    viewBox: "0 0 273 595",
     strokes: [
-      "M 200 80 C 240 80, 260 120, 240 150 C 220 180, 180 180, 160 155 C 140 130, 155 90, 200 80",
-      "M 160 155 C 140 200, 120 240, 80 260",
+      "M212 212 C 212 257, 175 294, 130 294 C 85 294, 48 257, 48 212 C 48 167, 85 130, 130 130 C 175 130, 212 167, 212 212 C 216 260, 213 330, 200 375 C 188 415, 155 440, 115 450 C 90 456, 65 457, 48 450",
     ],
+    widths: [62],
+    guideArrows: [[0.16, 0.48, 0.88]],
   },
-
-  // ي - Yaa
   yaa: {
     id: "yaa",
-    name: "yaa",
-    arabicName: "يَاء",
-    viewBox: "0 0 360 360",
+    name: "ياء",
+    viewBox: "0 0 329 595",
     strokes: [
-      "M 270 100 C 240 70, 180 70, 160 110 C 140 145, 175 165, 200 160",
-      "M 200 160 C 240 155, 290 200, 280 250 C 265 295, 190 305, 130 285 C 80 265, 60 215, 80 175",
+      "M272 158 C 232 136, 178 158, 186 194 C 194 228, 248 226, 268 250",
+      "M268 250 C 286 300, 230 346, 150 346 C 80 346, 48 312, 52 262 C 54 232, 60 216, 66 206",
     ],
+    widths: [44, 46],
     dots: [
-      { x: 150, y: 320, r: 18 },
-      { x: 210, y: 320, r: 18 },
+      { cx: 128, cy: 430 },
+      { cx: 200, cy: 430 },
     ],
+    dotR: 26,
+    continuousBody: true,
   },
 };
-
-/** Ordered list of all 28 Arabic letters */
-export const ALL_LETTERS: LetterSpec[] = [
-  LETTERS.alif!,
-  LETTERS.baa!,
-  LETTERS.tahaa!,
-  LETTERS.thaaa!,
-  LETTERS.jim!,
-  LETTERS.haa!,
-  LETTERS.khaa!,
-  LETTERS.daal!,
-  LETTERS.thaal!,
-  LETTERS.raa!,
-  LETTERS.zaa!,
-  LETTERS.sin!,
-  LETTERS.chin!,
-  LETTERS.saad!,
-  LETTERS.daad!,
-  LETTERS.taaa!,
-  LETTERS.thaad!,
-  LETTERS.aaa!,
-  LETTERS.gaa!,
-  LETTERS.faa!,
-  LETTERS.kaa!,
-  LETTERS.kaaf!,
-  LETTERS.lam!,
-  LETTERS.mim!,
-  LETTERS.noun!,
-  LETTERS.haaa!,
-  LETTERS.waaw!,
-  LETTERS.yaa!,
-];

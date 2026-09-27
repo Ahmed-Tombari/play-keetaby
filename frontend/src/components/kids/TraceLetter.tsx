@@ -1,5 +1,5 @@
-'use client';
-import { useCallback, useEffect, useRef, useState } from "react";
+"use client";
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from "react";
 import type { LetterSpec } from "./letters";
 import type { PaintTool } from "./palette";
 
@@ -7,38 +7,42 @@ type Point = { x: number; y: number };
 type StrokeData = { points: Point[]; length: number; startAngle: number; endAngle: number };
 
 const SAMPLES = 60;
-const HIT_RADIUS = 36;
+const HIT_RADIUS = 34;
 const LOOK_AHEAD = 8;
-const COMPLETE_AT = 0.85;
+// The child must trace manually all the way to the final arrow — no
+// auto-completion partway through the stroke.
+const COMPLETE_AT = 1;
+const CONTINUOUS_COMPLETE_AT = 1;
+/** Clear space between the letter outline and the edge of a dot. */
+const DOT_GAP = 16;
 
 function angle(a: Point, b: Point) {
   return (Math.atan2(b.y - a.y, b.x - a.x) * 180) / Math.PI;
 }
 
-export function TraceLetter({
-  letter,
-  tool,
-  onComplete,
-}: {
-  letter: LetterSpec;
-  tool: PaintTool;
-  onComplete?: (color: string) => void;
-}) {
+export function TraceLetter({ letter, tool, onComplete }: { letter: LetterSpec; tool: PaintTool; onComplete?: (color: string) => void }) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const pathRefs = useRef<Array<SVGPathElement | null>>([]);
   const drawing = useRef(false);
 
   const [data, setData] = useState<StrokeData[]>([]);
   const [progress, setProgress] = useState<number[]>(() => letter.strokes.map(() => 0));
-  const [dotFilled, setDotFilled] = useState<boolean[]>(() => (letter.dots ?? []).map(() => false));
+  const [completedDots, setCompletedDots] = useState<boolean[]>(() => letter.dots?.map(() => false) ?? []);
   const [fill, setFill] = useState<string | null>(null);
   const [paint, setPaint] = useState<string | null>(null);
+  const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
 
   useEffect(() => {
     if (fill) onComplete?.(fill);
   }, [fill, onComplete]);
 
-  // Re-measure strokes whenever letter changes
+  useEffect(() => {
+    setFill(null);
+    setPaint(null);
+    setProgress(letter.strokes.map(() => 0));
+    setCompletedDots(letter.dots?.map(() => false) ?? []);
+  }, [letter]);
+
   useEffect(() => {
     const measured: StrokeData[] = letter.strokes.map((_, i) => {
       const el = pathRefs.current[i];
@@ -52,16 +56,35 @@ export function TraceLetter({
       return {
         points,
         length,
-        startAngle: angle(points[0]!, points[Math.min(2, points.length - 1)]!),
-        endAngle: angle(points[Math.max(0, points.length - 3)]!, points[points.length - 1]!),
+        startAngle: angle(points[0]!, points[2]!),
+        endAngle: angle(points[points.length - 3]!, points[points.length - 1]!),
       };
     });
     setData(measured);
-    setProgress(letter.strokes.map(() => 0));
-    setDotFilled((letter.dots ?? []).map(() => false));
-    setFill(null);
-    setPaint(null);
   }, [letter]);
+
+  // Dots are nudged away from the letter body so a visible gap always
+  // separates them: upward for dots above the shape, downward for dots below.
+  const placedDots = useMemo(() => {
+    if (!letter.dots?.length) return [];
+    return letter.dots.map((dot) => {
+      const outer = letter.dotR ?? 20;
+      let best: { dist: number; p: Point; half: number } | null = null;
+      for (let i = 0; i < data.length; i++) {
+        const half = ((letter.widths?.[i] ?? 46) + 10) / 2;
+        for (const p of data[i]!.points) {
+          const dist = Math.hypot(p.x - dot.cx, p.y - dot.cy);
+          if (!best || dist - half < best.dist - best.half) best = { dist, p, half };
+        }
+      }
+      if (!best) return dot;
+      const edgeGap = best.dist - best.half - outer;
+      if (edgeGap >= DOT_GAP) return dot;
+      const deficit = DOT_GAP - edgeGap;
+      const dir = dot.cy <= best.p.y ? -1 : 1;
+      return { ...dot, cy: dot.cy + dir * deficit };
+    });
+  }, [letter, data]);
 
   const toSvgPoint = useCallback((clientX: number, clientY: number): Point | null => {
     const svg = svgRef.current;
@@ -76,7 +99,7 @@ export function TraceLetter({
 
   const reset = () => {
     setProgress(letter.strokes.map(() => 0));
-    setDotFilled((letter.dots ?? []).map(() => false));
+    setCompletedDots(letter.dots?.map(() => false) ?? []);
   };
 
   const handleDown = (e: React.PointerEvent) => {
@@ -88,36 +111,31 @@ export function TraceLetter({
       return;
     }
     setPaint(tool.crayon.value);
+    const point = toSvgPoint(e.clientX, e.clientY);
+    const bodyComplete = progress.every((value, i) => value >= (data[i]?.points.length ?? 1) - 1);
+    if (bodyComplete && point && placedDots.length) {
+      const outer = letter.dotR ?? 20;
+      const clickedDot = placedDots.findIndex(
+        (dot, i) => !completedDots[i] && Math.hypot(dot.cx - point.x, dot.cy - point.y) <= outer * 1.5,
+      );
+      if (clickedDot >= 0) {
+        const nextDots = [...completedDots];
+        nextDots[clickedDot] = true;
+        setCompletedDots(nextDots);
+        if (nextDots.every(Boolean)) setFill(tool.crayon.value);
+      }
+      drawing.current = false;
+      return;
+    }
     drawing.current = true;
     advance(e.clientX, e.clientY);
   };
 
   const advance = (clientX: number, clientY: number) => {
+    if (!data.length) return;
     const p = toSvgPoint(clientX, clientY);
     if (!p) return;
 
-    // Check dots interaction
-    if (letter.dots && letter.dots.length > 0) {
-      setDotFilled((prev) => {
-        let changed = false;
-        const next = prev.map((filled, idx) => {
-          if (filled) return true;
-          const dot = letter.dots![idx]!;
-          const radius = dot.r ?? 20;
-          const d = Math.hypot(dot.x - p.x, dot.y - p.y);
-          if (d < radius + 15) {
-            changed = true;
-            return true;
-          }
-          return false;
-        });
-        return changed ? next : prev;
-      });
-    }
-
-    if (!data.length) return;
-
-    // Advance strokes progress
     setProgress((prev) => {
       const active = prev.findIndex((v, i) => v < (data[i]?.points.length ?? 1) - 1);
       if (active === -1) return prev;
@@ -133,15 +151,18 @@ export function TraceLetter({
 
       const next = [...prev];
       next[active] = index;
-      if (index >= (pts.length - 1) * COMPLETE_AT) next[active] = pts.length - 1;
-
-      // Check completion of all strokes & dots
-      const strokesDone = next.every((v, i) => v >= (data[i]?.points.length ?? 1) - 1);
-      const dotsDone = !letter.dots || letter.dots.length === 0 || dotFilled.every(Boolean);
-
-      if (strokesDone && dotsDone && tool.kind === "color") {
-        setFill(tool.crayon.value);
+      const completionPoint = letter.continuousBody ? CONTINUOUS_COMPLETE_AT : COMPLETE_AT;
+      if (index >= (pts.length - 1) * completionPoint) {
+        next[active] = pts.length - 1;
       }
+
+      const bodyDone = next.every((v, i) => v >= (data[i]?.points.length ?? 1) - 1);
+      // Connected body paths continue under the same finger movement. Dots
+      // remain separate one-click actions after the complete body is traced.
+      if (index >= (pts.length - 1) * completionPoint && (!letter.continuousBody || bodyDone)) {
+        drawing.current = false;
+      }
+      if (bodyDone && !letter.dots?.length && tool.kind === "color") setFill(tool.crayon.value);
       return next;
     });
   };
@@ -154,8 +175,6 @@ export function TraceLetter({
   const stop = () => {
     drawing.current = false;
   };
-
-  const activeColor = fill ?? paint;
 
   return (
     <svg
@@ -170,83 +189,89 @@ export function TraceLetter({
       onPointerCancel={stop}
       onPointerLeave={stop}
     >
-      {/* 1. Main Tube Strokes (black outline + inner white tube + crayon ink fill) */}
+      {/* ring mask: the 5px band between the outer edge and the interior,
+          so the black outline is one continuous line with no gaps at joins */}
+      <defs>
+        <mask id={`${uid}-ring`} maskUnits="userSpaceOnUse" x="-100" y="-100" width="4000" height="4000">
+          {letter.strokes.map((d, i) => (
+            <path
+              key={`m-out-${i}`}
+              d={d}
+              fill="none"
+              stroke="#fff"
+              strokeWidth={(letter.widths?.[i] ?? 46) + 10}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+          {letter.strokes.map((d, i) => (
+            <path
+              key={`m-in-${i}`}
+              d={d}
+              fill="none"
+              stroke="#000"
+              strokeWidth={letter.widths?.[i] ?? 46}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          ))}
+        </mask>
+      </defs>
+      {letter.strokes.map((d, i) => (
+        <path
+          key={`inside-${i}`}
+          d={d}
+          fill="none"
+          stroke="var(--card)"
+          strokeWidth={letter.widths?.[i] ?? 46}
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
+      ))}
       {letter.strokes.map((d, i) => {
         const stroke = data[i];
         const ratio = stroke && stroke.points.length > 1 ? (progress[i] ?? 0) / (stroke.points.length - 1) : 0;
+        const color = fill ?? paint;
+        const strokeComplete = Boolean(fill) || ratio >= 1;
+        if (!color || !stroke || stroke.length === 0) return null;
         return (
-          <g key={`tube-${i}`}>
-            {/* Outer black stroke tube */}
-            <path
-              d={d}
-              fill="none"
-              stroke="#1a1a1a"
-              strokeWidth={56}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Inner background tube */}
-            <path
-              d={d}
-              fill="none"
-              stroke="var(--color-card)"
-              strokeWidth={44}
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            {/* Crayon ink fill layer */}
-            {activeColor && stroke && stroke.length > 0 && (
-              <path
-                d={d}
-                fill="none"
-                stroke={activeColor}
-                strokeWidth={44}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeDasharray={stroke.length}
-                strokeDashoffset={stroke.length * (1 - (fill ? 1 : ratio))}
-                className="transition-[stroke-dashoffset] duration-100 ease-linear"
-              />
-            )}
-          </g>
+          <path
+            key={`ink-${i}`}
+            d={d}
+            fill="none"
+            stroke={color}
+            strokeWidth={letter.widths?.[i] ?? 46}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeDasharray={strokeComplete ? "none" : stroke.length}
+            strokeDashoffset={strokeComplete ? 0 : stroke.length * (1 - ratio)}
+            className={strokeComplete ? undefined : "transition-[stroke-dashoffset] duration-100 ease-linear"}
+          />
         );
       })}
 
-      {/* 2. Dots Layer (Circles with dashed border + inner dot) */}
-      {(letter.dots ?? []).map((dot, i) => {
-        const radius = dot.r ?? 20;
-        const isFilled = fill ? true : (dotFilled[i] ?? false);
-        return (
-          <g key={`dot-${i}`}>
-            {/* Outer dashed circle outline */}
-            <circle
-              cx={dot.x}
-              cy={dot.y}
-              r={radius}
-              fill="none"
-              stroke="#1a1a1a"
-              strokeWidth={4}
-              strokeDasharray="6 4"
-            />
-            {/* Inner dot fill */}
-            <circle
-              cx={dot.x}
-              cy={dot.y}
-              r={isFilled ? radius - 3 : 7}
-              fill={isFilled ? activeColor ?? "var(--color-primary)" : "#1a1a1a"}
-              className="transition-all duration-200 ease-out"
-            />
-          </g>
-        );
-      })}
+      {/* continuous outer outline on top, drawn only inside the ring band */}
+      <g mask={`url(#${uid}-ring)`}>
+        {letter.strokes.map((d, i) => (
+          <path
+            key={`edge-${i}`}
+            d={d}
+            fill="none"
+            stroke="oklch(0.12 0 0)"
+            strokeWidth={(letter.widths?.[i] ?? 46) + 10}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        ))}
+      </g>
 
-      {/* 3. Dashed Guide Lines + Chevrons + Hit Area */}
+
       {letter.strokes.map((d, i) => {
         const stroke = data[i];
         const ratio = stroke ? (progress[i] ?? 0) / (stroke.points.length - 1) : 0;
         return (
           <g key={`guide-${i}`}>
-            {/* Dashed guide line */}
+            {/* dashed guide line — hidden once the letter is fully filled */}
             {!fill && (
               <path
                 ref={(el) => {
@@ -254,45 +279,79 @@ export function TraceLetter({
                 }}
                 d={d}
                 fill="none"
-                stroke="#2a2a2a"
+                stroke="oklch(0.18 0 0)"
                 strokeWidth={3}
-                strokeDasharray="10 10"
+                strokeDasharray="12 12"
                 strokeLinecap="round"
               />
             )}
-            {/* Active user tracing progress line */}
+            {/* traced progress */}
             {!fill && !paint && stroke && stroke.length > 0 && (
               <path
                 d={d}
                 fill="none"
-                stroke="var(--color-primary)"
-                strokeWidth={8}
+                stroke="var(--primary)"
+                strokeWidth={9}
                 strokeLinecap="round"
                 strokeDasharray={stroke.length}
                 strokeDashoffset={stroke.length * (1 - ratio)}
               />
             )}
-            {/* Thick transparent hit area for easy touch detection */}
+            {/* thick invisible hit area */}
             <path d={d} fill="none" stroke="transparent" strokeWidth={56} strokeLinecap="round" />
+            {/* one start point and one end arrow per continuous writing stroke */}
+            {!fill && stroke && stroke.points.length > 0 && (
+              <StrokeEndpoints
+                points={stroke.points}
+                showStart={!letter.continuousBody || i === 0}
+                showEnd={!letter.continuousBody || i === letter.strokes.length - 1}
+              />
+            )}
           </g>
         );
       })}
-
-      {/* 4. Directional Arrows (Chevrons) */}
-      {!fill &&
-        (letter.chevrons
-          ? letter.chevrons.map((ch, i) => <Chevron key={`chev-${i}`} point={{ x: ch.x, y: ch.y }} rotate={ch.rotate} />)
-          : data.map((stroke, i) => (
-              <g key={`auto-chev-${i}`}>
-                {stroke && stroke.points.length > 0 && (
-                  <>
-                    <Chevron point={stroke.points[0]!} rotate={stroke.startAngle} />
-                    <Chevron point={stroke.points[stroke.points.length - 1]!} rotate={stroke.endAngle} />
-                  </>
-                )}
-              </g>
-            )))}
+      {placedDots.map((dot, i) => {
+        const outer = letter.dotR ?? 20;
+        const complete = completedDots[i] ?? false;
+        return (
+          <g key={`dot-${i}`}>
+            <circle
+              cx={dot.cx}
+              cy={dot.cy}
+              r={outer}
+              fill={fill ?? (complete && paint ? paint : "var(--card)")}
+              stroke="oklch(0.12 0 0)"
+              strokeWidth={6}
+            />
+            {!fill && !complete && (
+              <circle
+                cx={dot.cx}
+                cy={dot.cy}
+                r={outer * 0.55}
+                fill="none"
+                stroke="oklch(0.18 0 0)"
+                strokeWidth={3}
+                strokeDasharray="7 7"
+              />
+            )}
+          </g>
+        );
+      })}
     </svg>
+  );
+}
+
+function StrokeEndpoints({ points, showStart, showEnd }: { points: Point[]; showStart: boolean; showEnd: boolean }) {
+  const start = points[0];
+  const end = points.at(-1);
+  const beforeEnd = points.at(-3) ?? start;
+  if (!start || !end || !beforeEnd) return null;
+
+  return (
+    <>
+      {showStart && <circle cx={start.x} cy={start.y} r={6} fill="oklch(0.12 0 0)" />}
+      {showEnd && <Chevron point={end} rotate={angle(beforeEnd, end)} />}
+    </>
   );
 }
 
@@ -301,7 +360,7 @@ function Chevron({ point, rotate }: { point: Point; rotate: number }) {
     <polyline
       points="-7,-7 0,0 -7,7"
       fill="none"
-      stroke="#1a1a1a"
+      stroke="oklch(0.18 0 0)"
       strokeWidth={5}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -309,3 +368,4 @@ function Chevron({ point, rotate }: { point: Point; rotate: number }) {
     />
   );
 }
+

@@ -1,3 +1,4 @@
+"use client";
 /**
  * The two little stars on the pill buttons.
  *
@@ -56,3 +57,4 @@ export function SmileyStar({
 export function PinkStar() {
   return <SmileyStar fill="#FFA8D4" edge="#F07BB8" face="#7A2A55" />;
 }
+

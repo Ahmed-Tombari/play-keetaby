@@ -1,4 +1,4 @@
-'use client';
+"use client";
 import { Eraser } from "lucide-react";
 import { CRAYONS, type PaintTool } from "./palette";
 
@@ -41,3 +41,4 @@ export function ColorPalette({ tool, onChange }: Props) {
     </div>
   );
 }
+
