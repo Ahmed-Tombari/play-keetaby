@@ -182,7 +182,8 @@ export function TraceLetter({ letter, tool, onComplete }: { letter: LetterSpec; 
       viewBox={letter.viewBox}
       role="img"
       aria-label={`تتبّع حرف ${letter.name}`}
-      className="h-[46vw] max-h-[320px] w-auto touch-none select-none sm:h-64 md:h-72 lg:h-80"
+      className="h-full w-auto max-h-full max-w-full touch-none select-none drop-shadow-sm min-h-0"
+      preserveAspectRatio="xMidYMid meet"
       onPointerDown={handleDown}
       onPointerMove={handleMove}
       onPointerUp={stop}

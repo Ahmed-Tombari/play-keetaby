@@ -143,6 +143,47 @@ body {
   font-family: var(--font-body);
   -webkit-tap-highlight-color: transparent;
   background: #0b0e26;
+  overscroll-behavior: none;
+}
+
+/* Landscape game-mode — mobile/tablet only (≤1024px wide) */
+@media (max-width: 1024px) and (orientation: landscape) {
+  .mobile-landscape-hidden {
+    display: none !important;
+  }
+  .mobile-landscape-top {
+    position: absolute;
+    top: 2%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10;
+  }
+  .mobile-landscape-p-0 {
+    padding: 0 !important;
+  }
+  .mobile-landscape-full {
+    height: 100dvh !important;
+    min-height: 100dvh !important;
+    border-radius: 0 !important;
+    border-width: 0 !important;
+  }
+  .mobile-landscape-border-0 {
+    border-width: 0 !important;
+  }
+  .mobile-landscape-flex-row {
+    flex-direction: row !important;
+  }
+  .mobile-landscape-gap-fluid {
+    gap: 4vw !important;
+  }
+  .mobile-landscape-canvas-wrapper {
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+    min-height: 0;
+  }
 }
 
 .screen {
