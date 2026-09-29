@@ -148,7 +148,17 @@ export default function TracingPage() {
         >
           {/* ── Portrait header (hidden in mobile landscape) ── */}
           <div className="flex items-start justify-between gap-2 mb-3 sm:mb-4 mobile-landscape-hidden">
-            <NavButtons />
+            <Link
+              href="/learn"
+              aria-label="الرجوع"
+              className="flex w-14 h-12 sm:w-20 sm:h-[72px] shrink-0 flex-col items-center justify-center gap-0.5
+                rounded-2xl border-4 border-primary bg-card text-primary shadow-md
+                transition-transform hover:scale-105 active:scale-95
+                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
+            >
+              <ArrowLeft className="size-5 sm:size-7" strokeWidth={2.5} />
+              <span className="text-[9px] sm:text-[11px] font-bold leading-none">رجوع</span>
+            </Link>
 
             <h1 className="
               mx-auto flex items-center gap-2
@@ -165,17 +175,8 @@ export default function TracingPage() {
               <Star className="size-5 sm:size-8 shrink-0 fill-kid-yellow stroke-[1.5] text-primary drop-shadow-sm" />
             </h1>
 
-            <Link
-              href="/learn"
-              aria-label="الرجوع"
-              className="flex w-14 h-12 sm:w-20 sm:h-[72px] shrink-0 flex-col items-center justify-center gap-0.5
-                rounded-2xl border-4 border-primary bg-card text-primary shadow-md
-                transition-transform hover:scale-105 active:scale-95
-                focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
-            >
-              <ArrowLeft className="size-5 sm:size-7" strokeWidth={2.5} />
-              <span className="text-[9px] sm:text-[11px] font-bold leading-none">رجوع</span>
-            </Link>
+            {/* Empty space matching back button width to keep title centered */}
+            <div className="w-14 sm:w-20 h-12 sm:h-[72px] shrink-0 border-4 border-transparent"></div>
           </div>
 
           {/* ── Portrait color palette ── */}
@@ -245,16 +246,7 @@ export default function TracingPage() {
                 <ColorPalette tool={tool} onChange={setTool} vertical />
               </div>
 
-              <Link
-                href="/learn"
-                aria-label="رجوع"
-                className="flex flex-col items-center justify-center gap-0.5 rounded-2xl border-4 border-card bg-card text-primary
-                  w-full aspect-square max-w-[52px] shadow-md transition-transform hover:scale-105 active:scale-95
-                  focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
-              >
-                <ArrowLeft className="size-4" strokeWidth={2.5} />
-                <span className="text-[7px] font-bold leading-none">رجوع</span>
-              </Link>
+
             </aside>
 
             {/* Canvas area */}
@@ -274,27 +266,17 @@ export default function TracingPage() {
                 </span>
               </div>
 
-              {/* Home + Content buttons — top-right of canvas, side by side */}
+              {/* Back button — top-right of canvas */}
               <div className="absolute top-1.5 right-2 z-20 flex flex-row gap-1.5">
                 <Link
-                  href="/"
-                  aria-label="الرئيسية"
-                  className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-primary bg-card text-primary
-                    h-[clamp(40px,8vh,62px)] w-[clamp(60px,7vh,60px)] shadow-md transition-transform hover:scale-105 active:scale-95
-                    focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
-                >
-                  <Home className="size-[60%] min-h-[12px]" strokeWidth={2.5} />
-                  <span className="text-[6px] sm:text-[8px] font-bold leading-none whitespace-nowrap">الرئيسية</span>
-                </Link>
-                <Link
                   href="/learn"
-                  aria-label="المحتوى"
+                  aria-label="الرجوع"
                   className="flex flex-col items-center justify-center gap-1 rounded-2xl border-2 border-primary bg-card text-primary
                     h-[clamp(40px,8vh,62px)] w-[clamp(60px,7vh,60px)] shadow-md transition-transform hover:scale-105 active:scale-95
                     focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-ring"
                 >
-                  <BookOpen className="size-[60%] min-h-[12px]" strokeWidth={2.5} />
-                  <span className="text-[6px] sm:text-[8px] font-bold leading-none whitespace-nowrap">المحتوى</span>
+                  <ArrowLeft className="size-[60%] min-h-[12px]" strokeWidth={2.5} />
+                  <span className="text-[6px] sm:text-[8px] font-bold leading-none whitespace-nowrap">رجوع</span>
                 </Link>
               </div>
 
